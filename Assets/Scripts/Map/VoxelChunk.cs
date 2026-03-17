@@ -40,14 +40,20 @@ namespace Lifey
             new Vector3Int(0, 0, -1)  // Back
         };
 
-        public void Initialize(int[,,] incomingBlocks)
+        public void Initialize(Vector3Int pos, int[,,] incomingBlocks)
         {
             blocks = incomingBlocks;
             width = blocks.GetLength(0);
             height = blocks.GetLength(1);
             depth = blocks.GetLength(2);
+            WorldManager.Instance.AddChunk(pos, this);
+        }
 
-            RegenerateMesh();
+        public int GetLocalBlock(int x, int y, int z)
+        {
+            if (IsBlockInBounds(x, y, z))
+                return blocks[x, y, z];
+            return 0;
         }
 
         // Change a single block and update the visual mesh
@@ -60,11 +66,29 @@ namespace Lifey
             }
         }
 
-        private void RegenerateMesh()
+        private int GetBlockID(int x, int y, int z)
+        {
+            if (IsBlockInBounds(x, y, z))
+            {
+                return blocks[x, y, z];
+            }
+
+            // If it's outside our bounds, ask the WorldManager
+            // We calculate the global position by adding the chunk's transform position to the local coordinates.
+            Vector3Int globalPos = new Vector3Int(
+                x + Mathf.RoundToInt(transform.position.x),
+                y + Mathf.RoundToInt(transform.position.y),
+                z + Mathf.RoundToInt(transform.position.z)
+            );
+
+            return WorldManager.Instance.GetBlockAtGlobalPosition(globalPos);
+        }
+
+        public void RegenerateMesh()
         {
             vertices.Clear();
             triangles.Clear();
-            uvs.Clear(); // NEW: Clear the old UVs!
+            uvs.Clear();
 
             GenerateMesh();
             ApplyMesh();
@@ -88,21 +112,11 @@ namespace Lifey
                             int neighborY = y + faceChecks[i].y;
                             int neighborZ = z + faceChecks[i].z;
 
-                            bool drawFace = false;
-                            if (!IsBlockInBounds(neighborX, neighborY, neighborZ))
-                            {
-                                drawFace = true;
-                            }
-                            else
-                            {
-                                int neighborID = blocks[neighborX, neighborY, neighborZ];
-                                if (neighborID == 0 || IsTransparent(neighborID))
-                                {
-                                    drawFace = true;
-                                }
-                            }
+                            // Use our new smart method to get the neighbor ID, whether it's inside or outside the chunk!
+                            int neighborID = GetBlockID(neighborX, neighborY, neighborZ);
 
-                            if (drawFace)
+                            // Draw the face if the neighbor is air OR if it's transparent
+                            if (neighborID == 0 || IsTransparent(neighborID))
                             {
                                 AddFace(i, new Vector3(x, y, z), currentBlockID);
                             }
@@ -146,11 +160,10 @@ namespace Lifey
 
         void ApplyMesh()
         {
-            Mesh mesh = new Mesh()
-            {
-                vertices = vertices.ToArray(),
-                triangles = triangles.ToArray(),
-            };
+            Mesh mesh = new Mesh();
+            mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+            mesh.vertices = vertices.ToArray();
+            mesh.triangles = triangles.ToArray();
 
             mesh.SetUVs(0, uvs);
             mesh.RecalculateNormals();
@@ -167,6 +180,19 @@ namespace Lifey
         private bool IsTransparent(int blockID)
         {
             return BlockDatabase.GetBlock(blockID).isTransparent;
+        }
+
+        // ----------------------------------------------------------------------------------------
+
+        // Unity automatically calls this method in the Editor
+        private void OnDrawGizmos()
+        {
+            if (width <= 0 || height <= 0 || depth <= 0) return;
+
+            Gizmos.color = Color.yellow;
+            Vector3 size = new Vector3(width, height, depth);
+            Vector3 center = transform.position + (size / 2f);
+            Gizmos.DrawWireCube(center, size);
         }
     }
 }
