@@ -1,25 +1,37 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Lifey
 {
+    public enum WorldType
+    {
+        SuperFlat
+    }
+
     public class WorldManager : MonoBehaviour
     {
         [SerializeField, Range(4, 32)] private int chunkSize = 16;
         [SerializeField, Range(4, 32)] private int chunkHeight = 16;
+        [SerializeField] private GameObject chunkPrefab;
         public int ChunkSize => chunkSize;
         public int ChunkHeight => chunkHeight;
-
-        public static WorldManager Instance { get; private set; }
 
         // A dictionary to store all our generated chunks by their world position
         private Dictionary<Vector3Int, VoxelChunk> chunks = new Dictionary<Vector3Int, VoxelChunk>();
 
+        // ----------------------------------------------------------------------------------------
+
+        // Singleton Pattern
+        public static WorldManager Instance { get; private set; }
         private void Awake()
         {
             if (Instance == null) Instance = this;
             else Destroy(gameObject);
         }
+
+        // ----------------------------------------------------------------------------------------
 
         // The chunk calls this to register itself when it spawns
         public void AddChunk(Vector3Int position, VoxelChunk chunk)
@@ -50,6 +62,62 @@ namespace Lifey
 
             // If the chunk doesn't exist (it hasn't loaded yet, or it's the edge of the map), pretend it's Air.
             return 0;
+        }
+
+
+        // ----------------------------------------------------------------------------------------
+
+        public VoxelChunk[,,] GenerateDefaultWorld(Vector3Int mapSize, WorldType worldType)
+        {
+            return worldType switch
+            {
+                WorldType.SuperFlat => GenerateDefaultSuperFlatWorld(mapSize),
+                _ => throw new InvalidOperationException($"{worldType} not supported.")
+            };
+        }
+
+        private VoxelChunk[,,] GenerateDefaultSuperFlatWorld(Vector3Int mapSize)
+        {
+            VoxelChunk[,,] res = new VoxelChunk[mapSize.x, mapSize.y, mapSize.z];
+            for (int i = 0; i < mapSize.x; i++)
+            {
+                for (int j = 0; j < mapSize.y; j++)
+                {
+                    for (int k = 0; k < mapSize.z; k++)
+                    {
+                        int[,,] data = new int[chunkSize, chunkHeight, chunkSize];
+                        if (j == 0)
+                        {
+                            for (int x = 0; x < chunkSize; x++)
+                            {
+                                for (int z = 0; z < chunkSize; z++)
+                                {
+                                    for (int y = 0; y < 3; y++)
+                                    {
+                                        data[x, y, z] = 1;
+                                    }
+                                }
+                            }
+                        }
+
+                        Vector3Int worldPos = new Vector3Int(
+                            i * chunkSize,
+                            j * chunkHeight,
+                            k * chunkSize
+                        );
+                        GameObject instance = Instantiate(chunkPrefab, worldPos, Quaternion.identity, transform);
+                        VoxelChunk vc = instance.GetComponent<VoxelChunk>();
+                        vc.width = chunkSize;
+                        vc.height = chunkHeight;
+                        vc.depth = chunkSize;
+
+                        vc.Initialize(worldPos, data);
+                        res[i, j, k] = vc;
+                    }
+                }
+            }
+
+            return res;
         }
     }
 }

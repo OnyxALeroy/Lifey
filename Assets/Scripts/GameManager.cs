@@ -14,7 +14,6 @@ namespace Lifey
 
         [Header("References")]
         [SerializeField] private GameObject world;
-        [SerializeField] private GameObject chunkPrefab;
 
         // ----------------------------------------------------------------------------------------
 
@@ -22,45 +21,8 @@ namespace Lifey
 
         private void Start()
         {
-            chunks = new VoxelChunk[mapSizeX, mapSizeY, mapSizeZ];
-
-            for (int i = 0; i < mapSizeX; i++)
-            {
-                for (int j = 0; j < mapSizeY; j++)
-                {
-                    for (int k = 0; k < mapSizeZ; k++)
-                    {
-                        // FIXME: temporary solid 16x16 floor that is 3 blocks thick
-                        int[,,] myCustomData = new int[16, 16, 16];
-                        for (int x = 0; x < 16; x++)
-                        {
-                            for (int z = 0; z < 16; z++)
-                            {
-                                for (int y = 0; y < 3; y++)
-                                {
-                                    myCustomData[x, y, z] = 1;
-                                }
-                            }
-                        }
-
-                        Vector3Int worldPos = new Vector3Int(
-                            i * WorldManager.Instance.ChunkSize,
-                            j * WorldManager.Instance.ChunkHeight,
-                            k * WorldManager.Instance.ChunkSize
-                        );
-                        GameObject instance = Instantiate(chunkPrefab, worldPos, Quaternion.identity, transform);
-                        VoxelChunk vc = instance.GetComponent<VoxelChunk>();
-                        vc.width = WorldManager.Instance.ChunkSize;
-                        vc.height = WorldManager.Instance.ChunkHeight;
-                        vc.depth = WorldManager.Instance.ChunkSize;
-
-                        vc.Initialize(worldPos, myCustomData);
-                        chunks[i, j, k] = vc;
-                    }
-                }
-            }
-
-
+            Vector3Int mapSize = new Vector3Int(mapSizeX, mapSizeY, mapSizeZ);
+            chunks = WorldManager.Instance.GenerateDefaultWorld(mapSize, WorldType.SuperFlat);
             for (int i = 0; i < mapSizeX; i++)
             {
                 for (int j = 0; j < mapSizeY; j++)

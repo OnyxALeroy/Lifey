@@ -119,6 +119,50 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &449009245
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 449009246}
+  - component: {fileID: 449009247}
+  m_Layer: 0
+  m_Name: UIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &449009246
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 449009245}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 7.18129, y: -0, z: 4.85213}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &449009247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 449009245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468d65ae6e2420890bda9c5c0b39a66b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonManager
 --- !u!1 &560444701
 GameObject:
   m_ObjectHideFlags: 0
@@ -212,6 +256,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lifey.WorldManager
   chunkSize: 16
   chunkHeight: 16
+  chunkPrefab: {fileID: 714030845441357384, guid: 5b3bbdf37485463dea6cf53f12f397d5, type: 3}
 --- !u!1 &897477112
 GameObject:
   m_ObjectHideFlags: 0
@@ -245,7 +290,6 @@ MonoBehaviour:
   mapSizeY: 4
   mapSizeZ: 2
   world: {fileID: 896327621}
-  chunkPrefab: {fileID: 714030845441357384, guid: 5b3bbdf37485463dea6cf53f12f397d5, type: 3}
 --- !u!4 &897477114
 Transform:
   m_ObjectHideFlags: 0
@@ -539,6 +583,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lifey.IsometricCameraController
   panSpeed: 15
+  sprintMultiplier: 2
+  sprintTransitionSpeed: 5
   rotateLeftKey: 31
   rotateRightKey: 19
   rotationDuration: 0.3
@@ -555,3 +601,4 @@ SceneRoots:
   - {fileID: 896327622}
   - {fileID: 897477114}
   - {fileID: 560444703}
+  - {fileID: 449009246}
