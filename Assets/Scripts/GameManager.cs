@@ -5,12 +5,18 @@ namespace Lifey
 {
     public class GameManager : MonoBehaviour
     {
+        [Header("Map Settings")]
         [SerializeField] private int mapSizeX;
         [SerializeField] private int mapSizeY;
         [SerializeField] private int mapSizeZ;
 
+        [Space(10)]
+
+        [Header("References")]
         [SerializeField] private GameObject world;
         [SerializeField] private GameObject chunkPrefab;
+
+        // ----------------------------------------------------------------------------------------
 
         private VoxelChunk[,,] chunks;
 

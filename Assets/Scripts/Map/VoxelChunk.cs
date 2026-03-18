@@ -3,12 +3,18 @@ using UnityEngine;
 
 namespace Lifey
 {
-    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
+    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
     public class VoxelChunk : MonoBehaviour
     {
+        [Header("Sizes")]
         public int width = 16;
         public int height = 16;
         public int depth = 16;
+
+        [Space(10)]
+
+        [Header("Settings")]
+        public string targetLayerName = "Ground";
 
         // How many blocks wide/tall your texture atlas is (e.g., a 4x4 grid of textures)
         private const int TextureAtlasSizeInBlocks = 4;
@@ -40,6 +46,8 @@ namespace Lifey
             new Vector3Int(0, 0, -1)  // Back
         };
 
+        // ----------------------------------------------------------------------------------------
+
         public void Initialize(Vector3Int pos, int[,,] incomingBlocks)
         {
             blocks = incomingBlocks;
@@ -47,6 +55,16 @@ namespace Lifey
             height = blocks.GetLength(1);
             depth = blocks.GetLength(2);
             WorldManager.Instance.AddChunk(pos, this);
+
+            int layerIndex = LayerMask.NameToLayer(targetLayerName);
+            if (layerIndex != -1) // -1 means the layer doesn't exist
+            {
+                gameObject.layer = layerIndex;
+            }
+            else
+            {
+                Debug.LogError($"Layer '{targetLayerName}' does not exist! Please create it in the top right of the Unity Editor.");
+            }
         }
 
         public int GetLocalBlock(int x, int y, int z)
@@ -168,6 +186,7 @@ namespace Lifey
             mesh.SetUVs(0, uvs);
             mesh.RecalculateNormals();
             GetComponent<MeshFilter>().mesh = mesh;
+            GetComponent<MeshCollider>().sharedMesh = mesh;
         }
 
         // ----------------------------------------------------------------------------------------
