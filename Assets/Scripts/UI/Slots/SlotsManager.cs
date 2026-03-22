@@ -30,7 +30,7 @@ namespace Lifey.UI
         {
             for (int i = 0; i < placableItemSlotAmount; i++)
             {
-                placableItemSlots[i].SetActive(i == index);
+                placableItemSlots[i].SetActive(i + 1 == index);
             }
         }
     }

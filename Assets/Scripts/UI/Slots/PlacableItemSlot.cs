@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 
 namespace Lifey.UI
 {
-    [RequireComponent(typeof(RectTransform)), RequireComponent(typeof(Image))]
+    [RequireComponent(typeof(RectTransform)), RequireComponent(typeof(Image)), RequireComponent(typeof(Button))]
     public class PlacableItemSlot : MonoBehaviour
     {
         [Header("Settings")]
@@ -24,6 +24,7 @@ namespace Lifey.UI
         [SerializeField, ReadOnly] private SlotsManager slotsManager;
         [SerializeField, ReadOnly] private int index = -1;
         [SerializeField, ReadOnly] private Key keybind;
+        [SerializeField, ReadOnly] private Button button;
 
         private readonly Key[] numberKeys = {
                 Key.Digit0, Key.Digit1, Key.Digit2, Key.Digit3, Key.Digit4,
@@ -32,6 +33,7 @@ namespace Lifey.UI
 
         public void Initialize(SlotsManager sm, int i)
         {
+            button = GetComponent<Button>();
             slotsManager = sm;
             index = i;
             blockData = defaultBlockData;
@@ -49,6 +51,10 @@ namespace Lifey.UI
                     $"Index {i} is out of range for a single number keybind."
                 );
             }
+
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(OnPressed);
+            // button.onClick.AddListener(() => OnPressed());
         }
 
         // ----------------------------------------------------------------------------------------
@@ -71,11 +77,11 @@ namespace Lifey.UI
             if (Keyboard.current == null) return;
             if (Keyboard.current[keybind].wasPressedThisFrame)
             {
-                OnKeybindPressed();
+                OnPressed();
             }
         }
 
-        private void OnKeybindPressed()
+        public void OnPressed()
         {
             Debug.Log($"Action triggered for index {index}! (Keybind: {keybind})");
             slotsManager.OnPlacableItemSlotSelected(index);
