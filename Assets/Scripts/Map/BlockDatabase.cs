@@ -6,6 +6,7 @@ namespace Lifey
     {
         // Singleton pattern
         public static BlockDatabase Instance { get; private set; }
+        public static bool IsReady { get; private set; }
 
         public BlockData[] blocks;
         private void Awake()
@@ -21,11 +22,23 @@ namespace Lifey
             }
         }
 
+        private void Start()
+        {
+            IsReady = true;
+        }
+
+        // ----------------------------------------------------------------------------------------
+
         public static BlockData GetBlock(int blockID)
         {
+            if (!IsReady)
+            {
+                Debug.LogError("BlockDatabase not ready! Call Initialize() first.");
+                return null;
+            }
             if (blockID < 0 || blockID >= Instance.blocks.Length)
             {
-                return Instance.blocks[0]; // Return Air (or an "Error" block) if out of bounds
+                return Instance.blocks[0];
             }
             return Instance.blocks[blockID];
         }

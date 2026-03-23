@@ -16,6 +16,9 @@ MonoBehaviour:
   blockID: 1
   isSolid: 1
   isTransparent: 0
-  textureTop: 1
-  textureSide: 1
-  textureBottom: 1
+  textureTopId: 1
+  textureSideId: 1
+  textureBottomId: 1
+  textureTop: {fileID: 0}
+  textureSide: {fileID: 0}
+  textureBottom: {fileID: 0}

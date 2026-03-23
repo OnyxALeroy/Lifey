@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Lifey;
 using Lifey.Attributes;
 
 namespace Lifey.UI
@@ -14,12 +16,24 @@ namespace Lifey.UI
 
         public void Initialize()
         {
+            StartCoroutine(InitializeRoutine());
+        }
+
+        private IEnumerator InitializeRoutine()
+        {
+            while (!BlockDatabase.IsReady)
+            {
+                yield return null;
+            }
+
             GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Screen.width);
             for (int i = 0; i < placableItemSlotAmount; i++)
             {
                 GameObject slotInstance = Instantiate(placableItemSlotPrefab, placableItemSlotsHolder.transform);
                 PlacableItemSlot slot = slotInstance.GetComponent<PlacableItemSlot>();
-                slot.Initialize(this, i + 1); // To link the buttons between 1 to 5
+                slot.Initialize(this, i + 1);
+
+                slot.SetBlock(BlockDatabase.GetBlock(i + 1));
                 placableItemSlots.Add(slot);
             }
         }

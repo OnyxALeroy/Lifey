@@ -14,9 +14,15 @@ namespace Lifey.UI
         [SerializeField] private Sprite activeSprite;
         [SerializeField] private Sprite unactiveSprite;
 
-        [Header("References")]
+        [Header("BlockData")]
         [SerializeField] private BlockData defaultBlockData;
         [SerializeField] private BlockData blockData;
+
+        [Space(10)]
+
+        [Header("References")]
+        [SerializeField] private Image slotImage;
+        [SerializeField] private Material voxelTerrainMaterial;
 
         [Space(10)]
 
@@ -54,7 +60,6 @@ namespace Lifey.UI
 
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(OnPressed);
-            // button.onClick.AddListener(() => OnPressed());
         }
 
         // ----------------------------------------------------------------------------------------
@@ -71,6 +76,25 @@ namespace Lifey.UI
                 gameObject.GetComponent<Image>().sprite = unactiveSprite;
             }
         }
+
+        public void SetBlock(BlockData block)
+        {
+            blockData = block;
+            if (block != null && voxelTerrainMaterial != null)
+            {
+                Sprite icon = IsometricIconGenerator.GenerateBlockIcon(block, voxelTerrainMaterial);
+                slotImage.sprite = icon;
+                slotImage.color = Color.white;
+                slotImage.enabled = true;
+            }
+            else
+            {
+                slotImage.sprite = null;
+                slotImage.enabled = false;
+            }
+        }
+
+        // ----------------------------------------------------------------------------------------
 
         private void Update()
         {
