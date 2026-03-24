@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using Lifey.UI;
+using Lifey.Attributes;
 
 namespace Lifey
 {
@@ -17,6 +18,13 @@ namespace Lifey
         [SerializeField] private LayerMask blockLayerMask;
         [SerializeField] private float maxRayDistance = 100f;
 
+        [Space(10)]
+
+        [Header("Interaction Settings")]
+        [Tooltip("How fast blocks are placed/broken when holding the mouse button down (in seconds).")]
+        [SerializeField] public float interactionCooldown = 0.2f;
+        [SerializeField, ReadOnly] private float lastInteractionTime = 0f;
+
         private void Start()
         {
             mainCamera ??= Camera.main;
@@ -26,21 +34,28 @@ namespace Lifey
         {
             if (Mouse.current != null)
             {
-                // Left Click -> Break Block
-                if (Mouse.current.leftButton.wasPressedThisFrame)
+                if (Mouse.current != null)
                 {
-                    if (!EventSystem.current.IsPointerOverGameObject())
+                    // We check if the pointer is over the UI first so we don't process anything if we're clicking menus
+                    if (EventSystem.current.IsPointerOverGameObject()) return;
+
+                    bool leftClickThisFrame = Mouse.current.leftButton.wasPressedThisFrame;
+                    bool leftHeld = Mouse.current.leftButton.isPressed;
+
+                    bool rightClickThisFrame = Mouse.current.rightButton.wasPressedThisFrame;
+                    bool rightHeld = Mouse.current.rightButton.isPressed;
+
+                    // LEFT CLICK (Break) - Triggers instantly on click, OR repeatedly while held based on the cooldown
+                    if (leftClickThisFrame || (leftHeld && Time.time >= lastInteractionTime + interactionCooldown))
                     {
                         PerformBlockRaycast(isBreaking: true);
+                        lastInteractionTime = Time.time; // Reset the timer
                     }
-                }
-
-                // Right Click -> Place Block
-                if (Mouse.current.rightButton.wasPressedThisFrame)
-                {
-                    if (!EventSystem.current.IsPointerOverGameObject())
+                    // RIGHT CLICK (Place) - Triggers instantly on click, OR repeatedly while held based on the cooldown
+                    else if (rightClickThisFrame || (rightHeld && Time.time >= lastInteractionTime + interactionCooldown))
                     {
                         PerformBlockRaycast(isBreaking: false);
+                        lastInteractionTime = Time.time; // Reset the timer
                     }
                 }
             }

@@ -426,6 +426,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   maxRayDistance: 100
+  interactionCooldown: 0.05
+  lastInteractionTime: 0
 --- !u!1 &1042894147
 GameObject:
   m_ObjectHideFlags: 0
