@@ -13,6 +13,7 @@ namespace Lifey.UI
         [SerializeField] private GameObject placableItemSlotPrefab;
         [SerializeField] private GameObject placableItemSlotsHolder;
         [SerializeField, ReadOnly] private List<PlacableItemSlot> placableItemSlots = new List<PlacableItemSlot>();
+        [SerializeField, ReadOnly] private int currentSelectedSlot = 0;
 
         public void Initialize()
         {
@@ -42,10 +43,18 @@ namespace Lifey.UI
 
         public void OnPlacableItemSlotSelected(int index)
         {
+            currentSelectedSlot = index;
             for (int i = 0; i < placableItemSlotAmount; i++)
             {
                 placableItemSlots[i].SetActive(i + 1 == index);
             }
+        }
+
+        // ----------------------------------------------------------------------------------------
+
+        public BlockData GetSelectedBlock()
+        {
+            return placableItemSlots[currentSelectedSlot].GetBlockData();
         }
     }
 }

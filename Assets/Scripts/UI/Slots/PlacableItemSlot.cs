@@ -94,6 +94,11 @@ namespace Lifey.UI
             }
         }
 
+        public BlockData GetBlockData()
+        {
+            return blockData;
+        }
+
         // ----------------------------------------------------------------------------------------
 
         private void Update()

@@ -152,6 +152,7 @@ MonoBehaviour:
   placableItemSlotPrefab: {fileID: 1919524269847834929, guid: e45e868caf09980e5b2e6490b335f31f, type: 3}
   placableItemSlotsHolder: {fileID: 2079376016}
   placableItemSlots: []
+  currentSelectedSlot: 0
 --- !u!224 &189054043
 RectTransform:
   m_ObjectHideFlags: 0
@@ -419,6 +420,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0de0563c721cedd09adec4d2321ccfec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClickManager
+  mainCamera: {fileID: 1962739237}
+  uIManager: {fileID: 449009248}
+  blockLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  maxRayDistance: 100
 --- !u!1 &1042894147
 GameObject:
   m_ObjectHideFlags: 0

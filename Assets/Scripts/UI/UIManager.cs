@@ -25,5 +25,12 @@ namespace Lifey.UI
         {
             slotsManager.Initialize();
         }
+
+        // ----------------------------------------------------------------------------------------
+
+        public BlockData GetSelectedBlock()
+        {
+            return slotsManager.GetSelectedBlock();
+        }
     }
 }
